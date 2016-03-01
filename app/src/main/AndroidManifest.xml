@@ -2,12 +2,10 @@
     package="com.twinkle.retwin_app">
 
     <application android:allowBackup="true" android:label="@string/app_name"
-        android:icon="@mipmap/ic_launcher" android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:icon="@mipmap/ic_launcher" android:supportsRtl="true" >
 
         <activity android:name=".MainActivity"
-            android:label="ReTwin"
-            android:theme="@style/AppTheme" >
+            android:label="ReTwin">
 
             <intent-filter>
 
