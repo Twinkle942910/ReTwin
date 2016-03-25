@@ -1,5 +1,6 @@
 package com.twinkle.retwin_app;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -11,6 +12,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.twinkle.retwin_app.adapter.TabsFragmentAdapter;
+import com.twinkle.retwin_app.dto.RemindDTO;
+
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main Activity of App
@@ -23,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ViewPager viewPager;
+
+    private TabsFragmentAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +61,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void initTabs() {
         viewPager = (ViewPager) findViewById(R.id.viewPager);
-        TabsFragmentAdapter adapter = new TabsFragmentAdapter(this, getSupportFragmentManager());
+        adapter = new TabsFragmentAdapter(this, getSupportFragmentManager());
         viewPager.setAdapter(adapter);
+
+        new ReTwinTask().execute();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
@@ -85,4 +97,25 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setCurrentItem(Constants.TAB_TWO);
     }
 
+
+    private class ReTwinTask extends AsyncTask<Void, Void, RemindDTO>
+    {
+
+        @Override
+        protected RemindDTO doInBackground(Void... params) {
+            RestTemplate template = new RestTemplate();
+            template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+            return template.getForObject(Constants.URL.GET_REMIND_ITEM, RemindDTO.class);
+        }
+
+        @Override
+        protected void onPostExecute(RemindDTO remindDTO) {
+            List<RemindDTO> list = new ArrayList<>();
+            list.add(remindDTO);
+
+            adapter.setData(list);
+
+        }
+    }
 }
